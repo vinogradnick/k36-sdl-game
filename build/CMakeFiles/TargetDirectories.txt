@@ -1,0 +1,3 @@
+/home/vinograd/container/build/CMakeFiles/main.dir
+/home/vinograd/container/build/CMakeFiles/edit_cache.dir
+/home/vinograd/container/build/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/home/vinograd/container/build",
+  "command": "/usr/bin/g++  -I/usr/include/SDL2 -g -std=gnu++17 -O2 -Wall -Wextra -Werror -o CMakeFiles/main.dir/src/main.cpp.o -c /home/vinograd/container/src/main.cpp",
+  "file": "/home/vinograd/container/src/main.cpp",
+  "output": "CMakeFiles/main.dir/src/main.cpp.o"
+}
+]
