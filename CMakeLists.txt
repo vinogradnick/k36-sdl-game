@@ -1,9 +1,12 @@
 cmake_minimum_required(VERSION 3.13)
 project(K36GCC10App CXX)
 
-# Устанавливаем стандарт C++
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+
+set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
+
 
 # ----------------------------------------
  message( "CHECK STATUS CROSS-COMPILATION ${CMAKE_CROSSCOMPILING}")
@@ -36,15 +39,10 @@ else()
 
 endif()
 
-
-
 # ---------------------------------------
 
-
-# Общие флаги для всех режимов
 add_compile_options(-O2 -Wall -Wextra -Werror)
 
-# Рекурсивно ищем все .cpp в src/
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
 
 # Собираем бинарь
@@ -62,5 +60,3 @@ if(SDL2_FOUND)
 endif()
 
 
-# Если нужны include'ы из других папок, добавь их так:
-# target_include_directories(main PRIVATE include/)
