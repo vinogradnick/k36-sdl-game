@@ -1,0 +1,1 @@
+clang++ --target=aarch64-linux-gnu  -mcpu=cortex-a35  --sysroot=/home/vinograd/container/vendor/k36-sysroot  -O2 -march=armv8-a  -fPIC  -o out -c src/main.cpp

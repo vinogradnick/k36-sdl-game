@@ -1,65 +1,54 @@
+#include <cmath>
+#include <cstdio>
 #include <SDL2/SDL.h>
-#include <iostream>
+#include "AssetConfig.hpp"
+#include "Core/Context.hpp"
+#include "Core/Scene.hpp"
+#include "Core/Ticker.hpp"
+#include "scenes/LoadingScene.hpp"
+
+
+void ClearScreen(GameContext & ctx)
+{
+    SDL_SetRenderDrawColor(ctx.renderer, 0, 0, 0, 255);
+    SDL_RenderClear(ctx.renderer);
+}
+
 
 int main()
 {
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        std::cerr << "SDL_Init failed: " << SDL_GetError() << std::endl;
-        return 1;
-    }
+    SDL_Init(SDL_INIT_VIDEO);
+    SDL_Window * window = SDL_CreateWindow("Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, 0);
 
-    SDL_Window *window = SDL_CreateWindow(
-        "SDL2 Drawing Example",
-        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-        800, 600,
-        SDL_WINDOW_SHOWN);
+    GameContext ctx(SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED));
+    SceneManager manager;
 
-    if (!window) {
-        std::cerr << "SDL_CreateWindow failed: " << SDL_GetError() << std::endl;
-        SDL_Quit();
-        return 1;
-    }
+    manager.setScene(LoadingScene::createScene(ctx));
 
-    // Создаем рендерер для окна
-    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-
-    if (!renderer) {
-        std::cerr << "SDL_CreateRenderer failed: " << SDL_GetError() << std::endl;
-        SDL_DestroyWindow(window);
-        SDL_Quit();
-        return 1;
-    }
+    ctx.assetServer.Prepare({AssetConfig::LOADING_SCREEN, AssetConfig::FONT_PATH});
 
     bool running = true;
-    SDL_Event event;
 
-    while (running) {
-        // Обработка событий
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) {
+
+    while (running)
+    {
+        SDL_Event event;
+        while (SDL_PollEvent(&event))
+        {
+            if (event.type == SDL_QUIT)
                 running = false;
-            }
         }
 
-        // Очистка экрана черным цветом
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderClear(renderer);
+        manager.update(ctx);
+        ClearScreen(ctx);
+        manager.render(ctx);
 
-        // Рисуем красный прямоугольник
-        SDL_Rect rect = { 200, 150, 400, 300 };
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_RenderFillRect(renderer, &rect);
-
-        // Отрисовать всё на экране
-        SDL_RenderPresent(renderer);
-
-        // Немного паузы, чтобы не грузить CPU
-        SDL_Delay(16); // примерно 60 FPS
+        SDL_RenderPresent(ctx.renderer);
     }
 
-    SDL_DestroyRenderer(renderer);
+
+    SDL_DestroyRenderer(ctx.renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
-
     return 0;
 }

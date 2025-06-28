@@ -1,4 +1,6 @@
 #!/usr/bin/bash
-rm -rf build-native && mkdir build-native && cd build-native
-cmake ..  -DCMAKE_BUILD_TYPE=Release
+mkdir build
+cd build
+rm -rf linux && mkdir linux && cd linux
+cmake ./../..  -DCMAKE_BUILD_TYPE=Release
 make

@@ -1,62 +1,70 @@
 cmake_minimum_required(VERSION 3.13)
-project(K36GCC10App CXX)
 
+set(CMAKE_C_COMPILER clang)
+set(CMAKE_CXX_COMPILER clang++)
+
+project(k36-game LANGUAGES CXX)
+
+# C++ стандарт
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Флаги для всех сборок
+add_compile_options(-O3 -Wall -Wextra -Werror -fno-exceptions -fno-rtti -ffast-math)
 
-set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
+# -------------------------------
+# Clang-tidy и санитайзеры (для хоста)
+# -------------------------------
+if(NOT CMAKE_CROSSCOMPILING)
+    set(CMAKE_CXX_CLANG_TIDY "clang-tidy")
 
+    if(ENABLE_SANITIZERS)
+        add_compile_options(-fsanitize=address,undefined -g -O0)
+        add_link_options(-fsanitize=address,undefined)
+    endif()
+endif()
 
-# ----------------------------------------
- message( "CHECK STATUS CROSS-COMPILATION ${CMAKE_CROSSCOMPILING}")
+# -------------------------------
+# SDL2: путь вручную (если кросс-компиляция)
+# -------------------------------
+set(SDL2_FOUND FALSE)
 
 if(CMAKE_CROSSCOMPILING)
-    message(STATUS "Cross-compiling: manually locating SDL2 in sysroot")
+    message(STATUS "Cross-compiling: locating SDL2 in sysroot")
 
-    # Путь к sysroot из toolchain
     set(SYSROOT ${CMAKE_SYSROOT})
-
     set(SDL2_INCLUDE_DIR ${SYSROOT}/usr/include/SDL2)
-    set(SDL2_LIBRARY ${SYSROOT}/usr/lib/libSDL2.so)
 
-    if(NOT EXISTS ${SDL2_INCLUDE_DIR})
-        message(WARNING "SDL2 include not found in sysroot, trying host includes")
-        set(SDL2_INCLUDE_DIR /usr/include/SDL2)
-    endif()
+    # Найдём первую подходящую .so
+    file(GLOB SDL2_LIB_CANDIDATES "${SYSROOT}/usr/lib/libSDL2.so*")
+    list(LENGTH SDL2_LIB_CANDIDATES _sdl2_lib_count)
 
-    if(EXISTS ${SDL2_INCLUDE_DIR} AND EXISTS ${SDL2_LIBRARY})
+    if(EXISTS ${SDL2_INCLUDE_DIR} AND _sdl2_lib_count GREATER 0)
+        list(GET SDL2_LIB_CANDIDATES 0 SDL2_LIBRARY)
+        set(SDL2_FOUND TRUE)
         message(STATUS "Found SDL2 include: ${SDL2_INCLUDE_DIR}")
         message(STATUS "Found SDL2 lib: ${SDL2_LIBRARY}")
-        set(SDL2_FOUND TRUE)
     else()
-        message(FATAL_ERROR "SDL2 not found in sysroot at ${SDL2_INCLUDE_DIR} or ${SDL2_LIBRARY}")
+        message(FATAL_ERROR "SDL2 not found in sysroot: ${SDL2_INCLUDE_DIR} or .so file")
     endif()
 else()
-    set(SDL2_FOUND TRUE)
+    # Хостовая сборка
     set(SDL2_INCLUDE_DIR /usr/include/SDL2)
     set(SDL2_LIBRARY /usr/lib/x86_64-linux-gnu/libSDL2.so)
-
+    set(SDL2_FOUND TRUE)
 endif()
 
-# ---------------------------------------
-
-add_compile_options(-O2 -Wall -Wextra -Werror)
-
+# -------------------------------
+# Исходники и таргет
+# -------------------------------
 file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp)
+add_executable(${PROJECT_NAME} ${SOURCES})
 
-# Собираем бинарь
-add_executable(main ${SOURCES})
-
-
-
-# -------------------------------------------------
-
-message("LINK SDL2 ${SDL2_INCLUDE_DIR} ${SDL2_LIBRARY}")
-
+# -------------------------------
+# Подключаем SDL2
+# -------------------------------
 if(SDL2_FOUND)
-    target_include_directories(main PRIVATE ${SDL2_INCLUDE_DIR})
-    target_link_libraries(main PRIVATE ${SDL2_LIBRARY})
+    target_include_directories(${PROJECT_NAME} PRIVATE ${SDL2_INCLUDE_DIR})
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARY})
 endif()
-
 
