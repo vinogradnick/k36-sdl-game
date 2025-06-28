@@ -1,0 +1,32 @@
+{
+  "configurations": [
+    {
+      "name": "Linux-x86_64",
+      "includePath": [
+        "${workspaceFolder}/src",
+        "/usr/include/SDL2",
+        "/usr/include",
+        "${workspaceFolder}/vendor/k36-sysroot/usr/include"
+      ],
+      "defines": [],
+      "compilerPath": "/usr/bin/g++",
+      "cStandard": "c17",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "linux-gcc-x64"
+    },
+    {
+      "name": "Linux-aarch64",
+      "includePath": [
+        "${workspaceFolder}/src",
+        "${workspaceFolder}/vendor/k36-sysroot/usr/include/SDL2",
+        "${workspaceFolder}/vendor/k36-sysroot/usr/include"
+      ],
+      "defines": [],
+      "compilerPath": "/usr/bin/aarch64-linux-gnu-g++-10",
+      "cStandard": "c17",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "linux-gcc-arm64"
+    }
+  ],
+  "version": 4
+}

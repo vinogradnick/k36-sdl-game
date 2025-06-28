@@ -1,0 +1,12 @@
+cmake .. \
+  -DCMAKE_SYSTEM_NAME=Linux \
+  -DCMAKE_C_COMPILER=clang \
+  -DCMAKE_CXX_COMPILER=clang++ \
+  -DCMAKE_C_FLAGS="--target=aarch64-linux-gnu -mcpu=cortex-a35" \
+  -DCMAKE_CXX_FLAGS="--target=aarch64-linux-gnu -mcpu=cortex-a35" \
+  -DCMAKE_EXE_LINKER_FLAGS="--target=aarch64-linux-gnu -mcpu=cortex-a35" \
+  -DSUPPORT_X11=OFF \
+  -DSUPPORT_GLFW=OFF \
+  -DSUPPORT_DRM=ON \
+  -DSUPPORT_MOUSE=OFF \
+  -DBUILD_EXAMPLES=OFF
