@@ -10,7 +10,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Флаги для всех сборок
-add_compile_options(-O3 -Wall -Wextra -Werror -fno-exceptions -fno-rtti -ffast-math)
+add_compile_options(-O3 -Wall -Wextra -Werror -fno-exceptions -fdata-sections
+  -ffunction-sections)
+add_link_options(-Wl,--gc-sections)
 
 # -------------------------------
 # Clang-tidy и санитайзеры (для хоста)
@@ -54,6 +56,16 @@ else()
     set(SDL2_FOUND TRUE)
 endif()
 
+
+
+# -------------------------------
+# Подключаем Vendor библиотеки
+# -------------------------------
+# set(YYJSON_DISABLE_NON_STANDARD ON CACHE INTERNAL "")
+# add_subdirectory(vendor/yyjson)
+
+
+
 # -------------------------------
 # Исходники и таргет
 # -------------------------------
@@ -68,3 +80,7 @@ if(SDL2_FOUND)
     target_link_libraries(${PROJECT_NAME} PRIVATE ${SDL2_LIBRARY})
 endif()
 
+if(YYJSON_DISABLE_NON_STANDARD)
+    target_include_directories(${PROJECT_NAME} PRIVATE /home/vinograd/vendor/yyjson/src)
+    target_link_libraries(${PROJECT_NAME} PRIVATE yyjson)
+endif()

@@ -19,7 +19,7 @@ struct SceneState {
   UI::ProgressView progress;
 };
 
-void Update(void *data, GameContext &) {
+void Update(void *data, GameContext &, const SceneManager &) {
   auto *state = static_cast<SceneState *>(data);
   if (state->ticker.tick()) {
     state->progress.Inc();
